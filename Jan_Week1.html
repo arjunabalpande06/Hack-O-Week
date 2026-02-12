@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institute FAQ Chatbot - Get Instant Answers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2C5F7F;
+            --primary-dark: #1A3A4F;
+            --accent: #E67E22;
+            --accent-light: #F39C12;
+            --background: #F8F5F0;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #6C7A89;
+            --shadow: rgba(44, 95, 127, 0.1);
+            --border: #E8E3DA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header with animated background */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(230, 126, 34, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(243, 156, 18, 0.1) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: slideDown 0.8s ease-out 0.2s both;
+        }
+
+        /* Main content area */
+        main {
+            padding: 60px 0;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        /* Sidebar with quick questions */
+        .sidebar {
+            background: var(--surface);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            border: 1px solid var(--border);
+            animation: slideRight 0.6s ease-out;
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .sidebar h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .sidebar h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        .quick-question {
+            padding: 15px 18px;
+            margin: 12px 0;
+            background: var(--background);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .quick-question:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        /* Chat box */
+        .chat-box {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            animation: slideLeft 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+        }
+
+        @keyframes slideLeft {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 25px 30px;
+            color: white;
+        }
+
+        .chat-header h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(to bottom, var(--background) 0%, var(--surface) 100%);
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-out;
+            display: flex;
+            gap: 12px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-message .message-avatar {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+        }
+
+        .bot-message .message-avatar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-bubble {
+            padding: 15px 20px;
+            border-radius: 15px;
+            max-width: 85%;
+        }
+
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message .message-bubble {
+            background: white;
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            padding: 0 5px;
+        }
+
+        /* Input area */
+        .chat-input-area {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        #userInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 95, 127, 0.1);
+        }
+
+        #sendBtn {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        #sendBtn:active {
+            transform: translateY(0);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            gap: 5px;
+            padding: 15px 20px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-light);
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 968px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--background);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>Institute FAQ Chatbot</h1>
+                <p class="subtitle">Get instant answers to all your questions about our institute</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="chat-container">
+                <!-- Sidebar with quick questions -->
+                <aside class="sidebar">
+                    <h2>Quick Questions</h2>
+                    <div class="quick-question" onclick="askQuestion('What are the admission requirements?')">
+                        📚 Admission Requirements
+                    </div>
+                    <div class="quick-question" onclick="askQuestion('What are your course fees?')">
+                        💰 Course Fees
+                    </div>
+                    <div class="quick-question" onclick="askQuestion('What are the campus timings?')">
+                        🕐 Campus Timings
+                    </div>
+                    <div class="quick-question" onclick="askQuestion('Do you offer scholarships?')">
+                        🎓 Scholarships
+                    </div>
+                    <div class="quick-question" onclick="askQuestion('What courses do you offer?')">
+                        📖 Available Courses
+                    </div>
+                    <div class="quick-question" onclick="askQuestion('How can I contact you?')">
+                        📞 Contact Information
+                    </div>
+                </aside>
+
+                <!-- Chat box -->
+                <div class="chat-box">
+                    <div class="chat-header">
+                        <h3>Chat with us</h3>
+                        <div class="chat-status">
+                            <span class="status-dot"></span>
+                            <span>Always here to help</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot-message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <strong>Welcome to our Institute FAQ Chatbot!</strong><br><br>
+                                    I can help you with information about:
+                                    <ul style="margin: 10px 0; padding-left: 20px;">
+                                        <li>Admission requirements and process</li>
+                                        <li>Course offerings and fees</li>
+                                        <li>Campus facilities and timings</li>
+                                        <li>Scholarships and placements</li>
+                                        <li>Contact information</li>
+                                    </ul>
+                                    Feel free to ask me anything or click on the quick questions!
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="userInput" 
+                                placeholder="Type your question here..."
+                                onkeypress="handleKeyPress(event)"
+                            >
+                            <button id="sendBtn" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Rule-based chatbot logic with pattern matching
+        const faqDatabase = {
+            // Admission related
+            'admission': {
+                patterns: ['admission', 'admit', 'join', 'enroll', 'entry', 'requirement', 'eligible', 'eligibility'],
+                response: "📚 <strong>Admission Requirements:</strong><br><br>For undergraduate programs:<br>• Minimum 60% in 12th grade<br>• Valid entrance exam score<br>• Age: 17-25 years<br><br>For postgraduate programs:<br>• Bachelor's degree with 55% marks<br>• Relevant entrance test qualification<br><br>Application opens in June every year. Visit our admissions office or check our website for the application form!"
+            },
+            
+            // Courses
+            'courses': {
+                patterns: ['course', 'program', 'degree', 'study', 'curriculum', 'what can i study', 'subjects', 'streams'],
+                response: "📖 <strong>Available Courses:</strong><br><br><strong>Undergraduate Programs:</strong><br>• B.Tech (Computer Science, Mechanical, Electrical, Civil)<br>• BBA (Business Administration)<br>• B.Sc (Physics, Chemistry, Mathematics)<br><br><strong>Postgraduate Programs:</strong><br>• M.Tech (Various specializations)<br>• MBA (Finance, Marketing, HR)<br>• M.Sc (Applied Sciences)<br><br>All programs are affiliated with the State University and recognized by UGC."
+            },
+            
+            // Fees
+            'fees': {
+                patterns: ['fee', 'cost', 'tuition', 'price', 'payment', 'charges', 'expensive', 'affordable'],
+                response: "💰 <strong>Course Fees Structure:</strong><br><br><strong>Undergraduate Programs:</strong><br>• B.Tech: ₹1,20,000 per year<br>• BBA: ₹80,000 per year<br>• B.Sc: ₹60,000 per year<br><br><strong>Postgraduate Programs:</strong><br>• M.Tech: ₹1,50,000 per year<br>• MBA: ₹2,00,000 per year<br>• M.Sc: ₹70,000 per year<br><br>Fees can be paid in installments. Additional charges for hostel and transportation apply."
+            },
+            
+            // Scholarships
+            'scholarship': {
+                patterns: ['scholarship', 'financial aid', 'merit', 'concession', 'waiver', 'discount'],
+                response: "🎓 <strong>Scholarship Opportunities:</strong><br><br>We offer various scholarships:<br>• <strong>Merit Scholarship:</strong> 25-50% fee waiver for toppers<br>• <strong>Need-based Aid:</strong> Up to 30% concession<br>• <strong>Sports Scholarship:</strong> For state/national level players<br>• <strong>Minority Scholarship:</strong> As per government norms<br><br>Students can apply for scholarships during admission. Documents required: mark sheets, income certificate, and category certificates (if applicable)."
+            },
+            
+            // Timings
+            'timing': {
+                patterns: ['timing', 'time', 'hours', 'schedule', 'when', 'open', 'close'],
+                response: "🕐 <strong>Campus Timings:</strong><br><br><strong>Academic Hours:</strong><br>• Monday - Friday: 8:00 AM - 4:00 PM<br>• Saturday: 8:00 AM - 1:00 PM<br>• Sunday: Closed<br><br><strong>Library:</strong> 7:00 AM - 8:00 PM (Mon-Sat)<br><strong>Office:</strong> 9:00 AM - 5:00 PM (Mon-Fri)<br><strong>Cafeteria:</strong> 8:00 AM - 6:00 PM<br><br>During exams, extended hours are available."
+            },
+            
+            // Location
+            'location': {
+                patterns: ['location', 'address', 'where', 'find', 'situated', 'campus'],
+                response: "📍 <strong>Campus Location:</strong><br><br>Main Campus:<br>123 Education Street,<br>University Road,<br>Nagpur, Maharashtra - 440001<br>India<br><br>We are located near the Central Mall, easily accessible by public transport. Bus routes 5, 12, and 27 stop right outside our campus!"
+            },
+            
+            // Contact
+            'contact': {
+                patterns: ['contact', 'phone', 'email', 'call', 'reach', 'touch', 'communicate'],
+                response: "📞 <strong>Contact Information:</strong><br><br><strong>Phone:</strong> +91-712-1234567<br><strong>Email:</strong> info@institute.edu.in<br><strong>Admissions:</strong> admissions@institute.edu.in<br><strong>Website:</strong> www.institute.edu.in<br><br><strong>Office Hours:</strong> 9 AM - 5 PM (Mon-Fri)<br><br>You can also visit us in person at the administration office!"
+            },
+            
+            // Placements
+            'placement': {
+                patterns: ['placement', 'job', 'career', 'recruitment', 'company', 'salary', 'package'],
+                response: "💼 <strong>Placement Records:</strong><br><br>Our Training & Placement Cell has an excellent track record:<br>• <strong>Placement Rate:</strong> 85% average<br>• <strong>Highest Package:</strong> ₹18 LPA<br>• <strong>Average Package:</strong> ₹6.5 LPA<br><br><strong>Recruiting Companies:</strong> TCS, Infosys, Wipro, Accenture, Amazon, Microsoft, and 100+ more.<br><br>We provide pre-placement training, mock interviews, and career counseling!"
+            },
+            
+            // Hostel
+            'hostel': {
+                patterns: ['hostel', 'accommodation', 'room', 'stay', 'residence', 'dormitory'],
+                response: "🏠 <strong>Hostel Facilities:</strong><br><br>We offer separate hostels for boys and girls:<br>• <strong>Capacity:</strong> 500+ students<br>• <strong>Room Types:</strong> Double & Triple sharing<br>• <strong>Fees:</strong> ₹60,000 per year (includes meals)<br>• <strong>Amenities:</strong> 24/7 security, WiFi, common room, laundry, gym<br><br>Mess provides nutritious vegetarian and non-vegetarian meals. Medical facility available round the clock."
+            },
+            
+            // Faculty
+            'faculty': {
+                patterns: ['faculty', 'teacher', 'professor', 'staff', 'instructor', 'educator'],
+                response: "👨‍🏫 <strong>Faculty Information:</strong><br><br>Our institute boasts highly qualified faculty:<br>• 80+ full-time faculty members<br>• 90% hold Ph.D. degrees<br>• Average experience: 12 years<br>• Many faculty members are published researchers<br><br>Student-faculty ratio: 15:1<br><br>Faculty members are dedicated to student success and provide mentorship beyond classroom hours."
+            },
+            
+            // Library
+            'library': {
+                patterns: ['library', 'book', 'resource', 'journal', 'reading'],
+                response: "📚 <strong>Library Facilities:</strong><br><br>Our central library offers:<br>• 50,000+ books and journals<br>• Digital library with e-resources<br>• 200+ seating capacity<br>• Separate reading rooms<br>• Photocopying and printing services<br><br><strong>Subscriptions:</strong> IEEE, Springer, Elsevier, and other major publishers<br><br>Open 7 AM - 8 PM on weekdays!"
+            },
+            
+            // Sports
+            'sports': {
+                patterns: ['sport', 'game', 'play', 'athletic', 'fitness', 'gym'],
+                response: "⚽ <strong>Sports & Recreation:</strong><br><br>We encourage holistic development through sports:<br>• Cricket & Football grounds<br>• Indoor badminton & table tennis<br>• Basketball & Volleyball courts<br>• Fully equipped gymnasium<br>• Yoga and meditation center<br><br>Regular inter-college tournaments and annual sports meet. Professional coaches available!"
+            },
+            
+            // Events
+            'events': {
+                patterns: ['event', 'fest', 'festival', 'function', 'celebration', 'cultural'],
+                response: "🎉 <strong>Events & Activities:</strong><br><br>Annual events include:<br>• <strong>TechFest:</strong> Technical symposium (February)<br>• <strong>CulturalFest:</strong> Arts & culture celebration (October)<br>• <strong>Sports Meet:</strong> Inter-department competition<br>• <strong>Industry Connect:</strong> Guest lectures and workshops<br><br>Regular club activities: Coding club, Drama club, Music club, Photography club, and more!"
+            },
+            
+            // Exams
+            'exam': {
+                patterns: ['exam', 'test', 'assessment', 'evaluation', 'marks', 'grade'],
+                response: "📝 <strong>Examination System:</strong><br><br><strong>Assessment Pattern:</strong><br>• Internal Assessment: 30%<br>• End Semester Exam: 70%<br><br><strong>Exam Schedule:</strong><br>• Mid-term: September & February<br>• End-term: December & May<br><br>Results declared within 30 days. Supplementary exams for failed students. CGPA-based grading system followed."
+            }
+        };
+
+        // Function to find matching FAQ
+        function findAnswer(userQuestion) {
+            userQuestion = userQuestion.toLowerCase().trim();
+            
+            // Check each FAQ category
+            for (let category in faqDatabase) {
+                const faq = faqDatabase[category];
+                
+                // Check if any pattern matches
+                for (let pattern of faq.patterns) {
+                    if (userQuestion.includes(pattern)) {
+                        return faq.response;
+                    }
+                }
+            }
+            
+            // Default response if no match found
+            return "I'm sorry, I couldn't find an answer to that specific question. 😊<br><br>I can help you with:<br>• Admissions & Eligibility<br>• Courses & Fees<br>• Scholarships<br>• Campus Facilities<br>• Placements<br>• Contact Information<br><br>Please try rephrasing your question or select from the quick questions on the left!";
+        }
+
+        // Function to get current time
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Function to add message to chat
+        function addMessage(message, isUser = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${isUser ? '👤' : '🤖'}</div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        ${message}
+                    </div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to show typing indicator
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message';
+            typingDiv.id = 'typingIndicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="typing-indicator active">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to remove typing indicator
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Main function to send message
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const userMessage = input.value.trim();
+            
+            if (userMessage === '') return;
+            
+            // Add user message
+            addMessage(userMessage, true);
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate bot thinking time
+            setTimeout(() => {
+                removeTypingIndicator();
+                const botResponse = findAnswer(userMessage);
+                addMessage(botResponse);
+            }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Function for quick questions
+        function askQuestion(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+    </script>
+</body>
+</html>

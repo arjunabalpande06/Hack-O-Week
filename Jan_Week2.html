@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Question Preprocessor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D5BFF;
+            --secondary: #FF6B35;
+            --accent: #F7B801;
+            --dark: #1A1D29;
+            --light: #F8F9FA;
+            --paper: #FFFEF9;
+            --ink: #2B2D42;
+            --shadow: rgba(45, 91, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--ink);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(247, 184, 1, 0.15) 0%, transparent 50%);
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(5deg); }
+            66% { transform: translate(-20px, 20px) rotate(-5deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+            letter-spacing: -2px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--paper);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .input-section {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1.5rem;
+            border: 3px solid var(--primary);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #1a3fbf);
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 91, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 91, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .options {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-wrapper label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .output-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 2px solid var(--primary);
+            position: relative;
+        }
+
+        .output-content.empty::before {
+            content: 'Processed output will appear here...';
+            color: #999;
+            font-style: italic;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .steps-section {
+            background: linear-gradient(135deg, #FFE5D9 0%, #FFC9B5 100%);
+        }
+
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 4rem;
+            margin-bottom: 1.5rem;
+            animation: slideInLeft 0.6s ease-out backwards;
+        }
+
+        .step-item:nth-child(1) { animation-delay: 0.1s; }
+        .step-item:nth-child(2) { animation-delay: 0.2s; }
+        .step-item:nth-child(3) { animation-delay: 0.3s; }
+        .step-item:nth-child(4) { animation-delay: 0.4s; }
+        .step-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-item::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #e5a000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(247, 184, 1, 0.4);
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+
+        .step-desc {
+            color: var(--ink);
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #e5a000;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Student Q Processor</h1>
+            <p class="subtitle">Advanced text preprocessing for educational content analysis</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="card input-section">
+                <h2><span class="icon">✏️</span> Input Question</h2>
+                <textarea id="inputText" placeholder="Enter student question here... 
+
+Example: What's the difference between photosynthesis and cellular respiration???"></textarea>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="processText()">
+                        <span>🚀 Process Text</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAll()">
+                        <span>Clear All</span>
+                    </button>
+                </div>
+
+                <div class="options">
+                    <div class="checkbox-wrapper tooltip">
+                        <input type="checkbox" id="lowercase" checked>
+                        <label for="lowercase">Lowercase</label>
+                        <span class="tooltip-text">Convert all text to lowercase</span>
+                    </div>
+                    <div class="checkbox-wrapper tooltip">
+                        <input type="checkbox" id="stopwords" checked>
+                        <label for="stopwords">Remove Stopwords</label>
+                        <span class="tooltip-text">Remove common words (the, is, at, etc.)</span>
+                    </div>
+                    <div class="checkbox-wrapper tooltip">
+                        <input type="checkbox" id="punctuation" checked>
+                        <label for="punctuation">Remove Punctuation</label>
+                        <span class="tooltip-text">Remove all punctuation marks</span>
+                    </div>
+                    <div class="checkbox-wrapper tooltip">
+                        <input type="checkbox" id="spelling" checked>
+                        <label for="spelling">Normalize Spelling</label>
+                        <span class="tooltip-text">Fix common spelling mistakes</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card output-section">
+                <h2><span class="icon">📊</span> Processed Output</h2>
+                <div id="output" class="output-content empty"></div>
+                <button class="copy-btn" onclick="copyOutput()">📋 Copy to Clipboard</button>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">📈</span> Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="originalWords">0</div>
+                        <div class="stat-label">Original Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="processedWords">0</div>
+                        <div class="stat-label">Processed Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="removedWords">0</div>
+                        <div class="stat-label">Removed Words</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card steps-section">
+                <h2><span class="icon">⚙️</span> Processing Steps</h2>
+                <ul class="steps-list">
+                    <li class="step-item">
+                        <div class="step-title">Lowercasing</div>
+                        <div class="step-desc">Converts all characters to lowercase for consistency</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-title">Tokenization</div>
+                        <div class="step-desc">Splits text into individual words or tokens</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-title">Stopword Removal</div>
+                        <div class="step-desc">Removes common words that don't add semantic value</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-title">Punctuation Handling</div>
+                        <div class="step-desc">Removes or normalizes punctuation marks</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-title">Spelling Normalization</div>
+                        <div class="step-desc">Corrects common spelling errors and variations</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Common English stopwords
+        const stopwords = new Set([
+            'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
+            'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
+            'to', 'was', 'will', 'with', 'what', 'when', 'where', 'who', 'why',
+            'how', 'this', 'these', 'those', 'there', 'their', 'they', 'them',
+            'we', 'us', 'our', 'you', 'your', 'i', 'my', 'me', 'am', 'do', 'does',
+            'did', 'have', 'had', 'but', 'or', 'if', 'not', 'can', 'could',
+            'would', 'should', 'may', 'might', 'must', 'shall', 'been', 'being',
+            'which', 'such', 'into', 'through', 'about', 'before', 'after', 'above',
+            'below', 'between', 'under', 'again', 'further', 'then', 'once'
+        ]);
+
+        // Common spelling corrections
+        const spellingCorrections = {
+            'whats': 'what is',
+            'wheres': 'where is',
+            'hows': 'how is',
+            'theres': 'there is',
+            'theyre': 'they are',
+            'youre': 'you are',
+            'whos': 'who is',
+            'its': 'it is',
+            'im': 'i am',
+            'dont': 'do not',
+            'doesnt': 'does not',
+            'didnt': 'did not',
+            'wont': 'will not',
+            'wouldnt': 'would not',
+            'shouldnt': 'should not',
+            'couldnt': 'could not',
+            'cant': 'cannot',
+            'isnt': 'is not',
+            'arent': 'are not',
+            'wasnt': 'was not',
+            'werent': 'were not',
+            'hasnt': 'has not',
+            'havent': 'have not',
+            'hadnt': 'had not',
+            'photosynthisis': 'photosynthesis',
+            'celular': 'cellular',
+            'resperation': 'respiration',
+            'diferent': 'different',
+            'diference': 'difference',
+            'explane': 'explain',
+            'recieve': 'receive',
+            'occured': 'occurred',
+            'seperate': 'separate',
+            'definately': 'definitely',
+            'wierd': 'weird',
+            'untill': 'until',
+            'truely': 'truly'
+        };
+
+        function processText() {
+            const input = document.getElementById('inputText').value;
+            
+            if (!input.trim()) {
+                alert('Please enter some text to process!');
+                return;
+            }
+
+            let text = input;
+            const options = {
+                lowercase: document.getElementById('lowercase').checked,
+                stopwords: document.getElementById('stopwords').checked,
+                punctuation: document.getElementById('punctuation').checked,
+                spelling: document.getElementById('spelling').checked
+            };
+
+            // Count original words
+            const originalWords = text.trim().split(/\s+/).filter(word => word.length > 0);
+            document.getElementById('originalWords').textContent = originalWords.length;
+
+            // Step 1: Lowercase
+            if (options.lowercase) {
+                text = text.toLowerCase();
+            }
+
+            // Step 2: Spelling normalization (before tokenization)
+            if (options.spelling) {
+                Object.keys(spellingCorrections).forEach(wrong => {
+                    const regex = new RegExp('\\b' + wrong + '\\b', 'gi');
+                    text = text.replace(regex, spellingCorrections[wrong]);
+                });
+            }
+
+            // Step 3: Remove/normalize punctuation
+            if (options.punctuation) {
+                // Remove repeated punctuation (???, !!!)
+                text = text.replace(/([!?.])\1+/g, '$1');
+                // Remove all punctuation
+                text = text.replace(/[^\w\s]|_/g, ' ');
+            }
+
+            // Step 4: Tokenization (split into words)
+            let tokens = text.trim().split(/\s+/).filter(word => word.length > 0);
+
+            // Step 5: Remove stopwords
+            if (options.stopwords) {
+                tokens = tokens.filter(word => !stopwords.has(word.toLowerCase()));
+            }
+
+            // Join tokens back
+            const processed = tokens.join(' ');
+
+            // Update output
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = processed;
+            outputDiv.classList.remove('empty');
+
+            // Update statistics
+            document.getElementById('processedWords').textContent = tokens.length;
+            document.getElementById('removedWords').textContent = originalWords.length - tokens.length;
+
+            // Animate stats
+            animateStats();
+        }
+
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach((stat, index) => {
+                stat.style.animation = 'none';
+                setTimeout(() => {
+                    stat.style.animation = 'slideDown 0.6s ease-out';
+                }, index * 100);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('output').textContent = '';
+            document.getElementById('output').classList.add('empty');
+            document.getElementById('originalWords').textContent = '0';
+            document.getElementById('processedWords').textContent = '0';
+            document.getElementById('removedWords').textContent = '0';
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').textContent;
+            
+            if (!output || output === 'Processed output will appear here...') {
+                alert('No output to copy!');
+                return;
+            }
+
+            navigator.clipboard.writeText(output).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy text');
+            });
+        }
+
+        // Add enter key support for textarea
+        document.getElementById('inputText').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                processText();
+            }
+        });
+
+        // Load example on page load
+        window.addEventListener('load', function() {
+            const exampleText = "What's the difference between photosynthesis and cellular respiration???";
+            document.getElementById('inputText').value = exampleText;
+        });
+    </script>
+</body>
+</html>
